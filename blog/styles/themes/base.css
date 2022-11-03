@@ -9,6 +9,22 @@
   font-style: normal;
 }
 
+#base [data-align='center'] {
+  width: 100%;
+}
+
+#base [data-align='center'] :is(h1, h2, h3, h4, h5, h6, p) {
+  text-align: center;
+}
+
+#base [data-align='right'] {
+  width: 100%;
+}
+
+#base [data-align='right'] :is(h1, h2, h3, h4, h5, h6, p) {
+  text-align: right;
+}
+
 /** section **/
 #base .section {
   margin-top: 48px;
@@ -63,75 +79,89 @@
   }
 }
 
-#base .section > div.content-width-xs {
+#base .section > div.content-width-xs,
+#base .section.content-width-xs > div:not([class*='content-width-']) {
   max-width: calc(560px + var(--section-padding-mobile) * 2);
 }
 
 @media (min-width: 600px) {
-  #base .section > div.content-width-xs {
+  #base .section > div.content-width-xs,
+  #base .section.content-width-xs > div:not([class*='content-width-']) {
     max-width: calc(560px + var(--section-padding) * 2);
   }
 }
 
-#base .section > div.content-width-sm {
+#base .section > div.content-width-sm,
+#base .section.content-width-sm > div:not([class*='content-width-']) {
   max-width: calc(760px + var(--section-padding-mobile) * 2);
 }
 
 @media (min-width: 600px) {
-  #base .section > div.content-width-sm {
+  #base .section > div.content-width-sm,
+  #base .section.content-width-sm > div:not([class*='content-width-']) {
     max-width: calc(760px + var(--section-padding) * 2);
   }
 }
 
-#base .section > div.content-width-md {
+#base .section > div.content-width-md,
+#base .section.content-width-md > div:not([class*='content-width-']) {
   max-width: calc(960px + var(--section-padding-mobile) * 2);
 }
 
 @media (min-width: 600px) {
-  #base .section > div.content-width-md {
+  #base .section > div.content-width-md,
+  #base .section.content-width-md > div:not([class*='content-width-']) {
     max-width: calc(960px + var(--section-padding) * 2);
   }
 }
 
 @media (min-width: 1441px) {
-  #base .section > div.content-width-md {
+  #base .section > div.content-width-md,
+  #base .section.content-width-md > div:not([class*='content-width-']) {
     max-width: calc(1160px + var(--section-padding) * 2);
   }
 }
 
-#base .section > div.content-width-lg {
+#base .section > div.content-width-lg,
+#base .section.content-width-lg > div:not([class*='content-width-']) {
   max-width: calc(1160px + var(--section-padding-mobile) * 2);
 }
 
 @media (min-width: 600px) {
-  #base .section > div.content-width-lg {
+  #base .section > div.content-width-lg,
+  #base .section.content-width-lg > div:not([class*='content-width-']) {
     max-width: calc(1160px + var(--section-padding) * 2);
   }
 }
 
 @media (min-width: 1441px) {
-  #base .section > div.content-width-lg {
+  #base .section > div.content-width-lg,
+  #base .section.content-width-lg > div:not([class*='content-width-']) {
     max-width: calc(1360px + var(--section-padding) * 2);
   }
 }
 
-#base .section > div.content-width-xl {
+#base .section > div.content-width-xl,
+#base .section.content-width-xl > div:not([class*='content-width-']) {
   max-width: calc(1360px + var(--section-padding-mobile) * 2);
 }
 
 @media (min-width: 600px) {
-  #base .section > div.content-width-xl {
+  #base .section > div.content-width-xl,
+  #base .section.content-width-xl > div:not([class*='content-width-']) {
     max-width: calc(1360px + var(--section-padding) * 2);
   }
 }
 
 @media (min-width: 1441px) {
-  #base .section > div.content-width-xl {
+  #base .section > div.content-width-xl,
+  #base .section.content-width-xl > div:not([class*='content-width-']) {
     max-width: calc(1560px + var(--section-padding) * 2);
   }
 }
 
-#base .section > div.content-width-full {
+#base .section > div.content-width-full,
+#base .section.content-width-full > div:not([class*='content-width-']) {
   max-width: 100%;
   padding-left: 0;
   padding-right: 0;
@@ -139,19 +169,75 @@
 
 /** block **/
 #base .block.spacing {
-  margin-top: 64px;
-  margin-bottom: 64px;
+  margin-top: 48px;
+  margin-bottom: 48px;
 }
 
 #base .block.spacing-top {
-  margin-top: 64px;
+  margin-top: 48px;
 }
 
 #base .block.spacing-bottom {
-  margin-bottom: 64px;
+  margin-bottom: 48px;
 }
 
-/** buttons/links **/
+@media (min-width: 1025px) {
+  #base .block.spacing {
+    margin-top: 64px;
+    margin-bottom: 64px;
+  }
+
+  #base .block.spacing-top {
+    margin-top: 64px;
+  }
+
+  #base .block.spacing-bottom {
+    margin-bottom: 64px;
+  }
+}
+
+/** button **/
+#base .button {
+  font-size: 15px;
+  padding: 10px 30px;
+  background-image: unset;
+}
+
+#base .button-size-md .button {
+  padding: 10px 30px;
+}
+
+#base .button-size-lg .button {
+  font-size: 17px;
+  padding: 18px 40px;
+}
+
+#base .button-style-link .button {
+  padding: 0;
+}
+
+#base .button-container {
+  margin: 0;
+  text-align: unset;
+}
+
+#base .button-style-link .button-container {
+  margin-bottom: 5px;
+}
+
+#base .button-inline .button-container {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+#base .button-inline .button-container:last-of-type {
+  margin-right: 0;
+}
+
+#base .button-color-gradient .button {
+  background-image: linear-gradient(90deg, var(--theme-shade5) 0%, var(--theme-shade10) 100%);
+}
+
 #base .button-color-base a.button:any-link,
 #base .button-color-base.columns a.button:any-link {
   background-color: var(--theme-base);
@@ -373,6 +459,34 @@
   color: var(--theme-shade15);
 }
 
+#base .title-color-secondary-base :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-base);
+}
+
+#base .title-color-secondary-tint-5 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-tint5);
+}
+
+#base .title-color-secondary-tint-15 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-tint15);
+}
+
+#base .title-color-secondary-tint-10 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-tint10);
+}
+
+#base .title-color-secondary-shade-5 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-shade5);
+}
+
+#base .title-color-secondary-shade-10 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-shade10);
+}
+
+#base .title-color-secondary-shade-15 :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--secondary-theme-shade15);
+}
+
 /** columns **/
 #base .columns strong {
   color: var(--theme-shade10);
@@ -422,4 +536,8 @@
 
 #base .toc li:not(:first-child) {
   margin-top: 5px;
+}
+
+#base .cards > .card .button:any-link {
+  padding: 0;
 }

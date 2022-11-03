@@ -444,11 +444,19 @@ export function updateSectionsStatus(main) {
         break;
       } else {
         const { top } = section.getBoundingClientRect();
-        if (top < window.innerHeight) section.setAttribute('data-section-status', 'loaded');
+        if (top < window.innerHeight) {
+          const event = new CustomEvent('section-display', { detail: { section }});
+          document.body.dispatchEvent(event);
+          section.setAttribute('data-section-status', 'loaded');
+        }
         else {
           section.setAttribute('data-section-status', 'loaded-below-the-fold');
           if (i === sections.length) {
-            sections.forEach((s) => { s.dataset.sectionStatus = 'loaded'; });
+            sections.forEach((s) => { 
+              s.dataset.sectionStatus = 'loaded';
+              const event = new CustomEvent('section-display', { detail: { section }});
+              document.body.dispatchEvent(event);    
+            });
           }
         }
       }
@@ -569,8 +577,14 @@ export async function loadSection(section, index, aboveTheFold = true) {
 
     if (aboveTheFold) {
       section.dataset.sectionStatus = 'loaded';
+      const event = new CustomEvent('section-display', { detail: { section }});
+      document.body.dispatchEvent(event);
+
     } else {
       section.dataset.sectionStatus = 'loaded-below-the-fold';
+      const event = new CustomEvent('section-display', { detail: { section }});
+      document.body.dispatchEvent(event);
+
     }
   }
 }
@@ -1128,7 +1142,7 @@ async function loadLazy(doc) {
  */
 function loadDelayed() {
   // eslint-disable-next-line import/no-cycle
-  window.setTimeout(() => import('./delayed.js'), 4000);
+  if (!window.hlx.performance) window.setTimeout(() => import('./delayed.js'), 4000);
   // load anything that can be postponed to the latest here
 }
 
@@ -1242,13 +1256,6 @@ export function createElem(elemType, ...cssClass) {
   return elem;
 }
 
-const params = new URLSearchParams(window.location.search);
-if (params.get('performance')) {
-  import('./performance.js').then((mod) => {
-    if (mod.default) mod.default();
-  });
-}
-
 /**
  * Add width to a block's parent.
  * @param {Element} block The block element
@@ -1270,5 +1277,13 @@ export function addWidthToParent(block) {
       block.classList.remove(w);
     }
     return found;
+  });
+}
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('performance')) {
+  window.hlx.performance = true;
+  import('./performance.js').then((mod) => {
+    if (mod.default) mod.default();
   });
 }

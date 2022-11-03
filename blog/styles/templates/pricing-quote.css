@@ -9,6 +9,7 @@ body.pricing-quote {
   line-height: 48px;
   margin-top: 0;
   padding-top: 48px;
+  text-align: center;
 }
 
 .pricing-quote main .section:last-child {
@@ -20,7 +21,7 @@ body.pricing-quote {
 }
 
 .pricing-quote main h1,
-.pricing-quote main .title-container .default-content-wrapper p {
+.pricing-quote main .title-container .default-content-wrapper p:not(.modal-form-subtitle) {
   color: var(--color-white);
 }
 
@@ -36,7 +37,7 @@ body.pricing-quote {
   margin-top: 0;
 }
 
-.pricing-quote main .section.bg-bottom-single-1 .default-content-wrapper p {
+.pricing-quote main .section.bg-bottom-single-1 .default-content-wrapper p:not(.modal-form-subtitle) {
   margin-bottom: 0;
   padding-bottom: 100px;
   color: var(--color-white);
@@ -92,13 +93,9 @@ body.pricing-quote {
 }
 
 /* stylelint-disable-next-line no-descending-specificity */
-.pricing-quote main .form a.button {
+.pricing-quote main .button-container a[data-modal].button {
   color: var(--color-1-shade-15);
   background-color: var(--color-1-tint-10);
-}
-
-.pricing-quote main .form-container .default-content-wrapper {
-  text-align: center;
 }
 
 /* Quote */

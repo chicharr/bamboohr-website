@@ -11,7 +11,7 @@ export default async function decorate(block) {
   const html = await resp.text();
   block.innerHTML = html;
   decorateIcons(block);
-  const styles = ['company', 'support', 'links', 'blog', 'social', 'brand', 'legal'];
+  const styles = ['company', 'support', 'compare', 'links', 'blog', 'social', 'brand', 'legal'];
   styles.forEach((style, i) => {
     if (block.children[i]) {
       block.children[i].classList.add(style);

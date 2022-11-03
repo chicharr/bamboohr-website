@@ -25,7 +25,7 @@
   text-align: left;
 }
 
-.hr-unplugged .section-1 .form-wrapper > .form > a > a,
+.hr-unplugged .section-1 .button-container a[data-modal].button,
 .hr-unplugged .section-3 .button-container a {
   color: var(--theme-shade15);
   background-color: var(--theme-tint5);

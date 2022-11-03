@@ -492,80 +492,25 @@ export default async function decorate(block) {
       if (config && !block.classList.contains('has-content')) {
         block.innerHTML = '';
       }
-      if (config.modal && config.modal.toLowerCase() === 'yes') {
-        const formModal = async (a) => {
-          a.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const elem = document.getElementById(`${formId}-modal`);
-            if (!elem) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'modal-wrapper';
-              wrapper.id = `${formId}-modal`;
-
-              const modal = document.createElement('div');
-              modal.className = 'modal';
-              modal.innerHTML = '<div class="modal-close"></div>';
-              const modalContent = document.createElement('div');
-              modalContent.classList.add('modal-content');
-              modal.append(modalContent);
-              const formTitle = document.createElement('div');
-              formTitle.classList.add('typ-title1', 'modal-form-title');
-              formTitle.textContent = config['form-title'];
-              const formSubtitle = document.createElement('p');
-              formSubtitle.textContent = config['form-subtitle'];
-              formSubtitle.classList.add('modal-form-subtitle');
-              modalContent.append(formTitle);
-              modalContent.append(formSubtitle);
-              const mktoForm = document.createElement('form');
-              mktoForm.id = `mktoForm_${formId}`;
-              modalContent.append(mktoForm);
-              wrapper.append(modal);
-              block.append(wrapper);
-              loadFormAndChilipiper(formId, successUrl, chilipiper);
-              wrapper.classList.add('visible');
-              document.body.classList.add('modal-open');
-              const close = modal.querySelector('.modal-close');
-              close.addEventListener('click', () => {
-                wrapper.classList.remove('visible');
-                document.body.classList.remove('modal-open');
-              });
-            } else {
-              elem.classList.add('visible');
-              document.body.classList.add('modal-open');
-            }
-          });
-        };
-        if (config['modal-button-text']) {
-          let buttonSize = '';
-          if (config['modal-button-size'] && config['modal-button-size'].toLowerCase() === 'small') {
-            buttonSize = 'small';
+      const mktoForm = `<form id="mktoForm_${formId}"></form>`;
+      if (block.classList.contains('has-content')) {
+        const cols = block.querySelectorAll(':scope > div > div');
+        cols.forEach((col) => {
+          const formCol = [...col.children].find((child) => child.textContent.trim().toLowerCase() === 'form');
+          if (formCol) {
+            col.classList.add('form-col');
+            formCol.remove();
+            const formContainer = document.createElement('div');
+            formContainer.innerHTML = mktoForm;
+            col.append(formContainer);
+            loadFormAndChilipiper(formId, successUrl, chilipiper);
+          } else {
+            col.classList.add('content-col');
           }
-          const modalBtn = document.createElement('a');
-          modalBtn.innerHTML = `<a class="button ${buttonSize}" href="#" data-modal="${formId}-modal">${config['modal-button-text']}</a>`;
-          formModal(modalBtn);
-          block.append(modalBtn);
-        }
+        });
       } else {
-        const mktoForm = `<form id="mktoForm_${formId}"></form>`;
-        if (block.classList.contains('has-content')) {
-          const cols = block.querySelectorAll(':scope > div > div');
-          cols.forEach((col) => {
-            const formCol = [...col.children].find((child) => child.textContent.trim().toLowerCase() === 'form');
-            if (formCol) {
-              col.classList.add('form-col');
-              formCol.remove();
-              const formContainer = document.createElement('div');
-              formContainer.innerHTML = mktoForm;
-              col.append(formContainer);
-              loadFormAndChilipiper(formId, successUrl, chilipiper);
-            } else {
-              col.classList.add('content-col');
-            }
-          });
-        } else {
-          block.innerHTML = mktoForm;
-          loadFormAndChilipiper(formId, successUrl, chilipiper);
-        }
+        block.innerHTML = mktoForm;
+        loadFormAndChilipiper(formId, successUrl, chilipiper);
       }
     } else {
       const formEl = await createForm(formUrl);
