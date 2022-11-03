@@ -12,6 +12,7 @@ function stamp(message, time = new Date() - performance.timing.navigationStart, 
       tbt: 'red',
       paint: '#b73',
       franklin: '#586AE8',
+      mark: '#bada55',
     };
     const color = colors[type] || '#888';
     // eslint-disable-next-line no-console
@@ -68,7 +69,7 @@ function stamp(message, time = new Date() - performance.timing.navigationStart, 
       });
       // Start listening for `longtask` entries to be dispatched.
       popaint.observe({ type: 'paint', buffered: true });
-  
+
       const pores = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         entries.forEach((entry) => {
@@ -82,7 +83,7 @@ function stamp(message, time = new Date() - performance.timing.navigationStart, 
     }
 
     document.body.addEventListener('section-display', (e) => {
-        stamp(`section displayed`, new Date() - performance.timing.navigationStart,'franklin');
+        stamp(`section displayed ${e.detail.atf ? 'above' : 'below'}-the-fold`, new Date() - performance.timing.navigationStart,'franklin');
         // eslint-disable-next-line no-console
         console.log(e.detail.section);
     });

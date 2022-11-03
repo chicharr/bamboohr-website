@@ -427,44 +427,6 @@ export function decorateSections($main) {
 }
 
 /**
- * Updates all section status in a container element.
- * @param {Element} main The container element
- */
-export function updateSectionsStatus(main) {
-  const sections = [...main.querySelectorAll(':scope > div.section')];
-  for (let i = 0; i < sections.length; i += 1) {
-    const section = sections[i];
-    const status = section.getAttribute('data-section-status');
-    if (status !== 'loaded') {
-      const loadingBlock = section.querySelector(
-        '.block[data-block-status="initialized"], .block[data-block-status="loading"]'
-      );
-      if (loadingBlock) {
-        section.setAttribute('data-section-status', 'loading');
-        break;
-      } else {
-        const { top } = section.getBoundingClientRect();
-        if (top < window.innerHeight) {
-          const event = new CustomEvent('section-display', { detail: { section }});
-          document.body.dispatchEvent(event);
-          section.setAttribute('data-section-status', 'loaded');
-        }
-        else {
-          section.setAttribute('data-section-status', 'loaded-below-the-fold');
-          if (i === sections.length) {
-            sections.forEach((s) => { 
-              s.dataset.sectionStatus = 'loaded';
-              const event = new CustomEvent('section-display', { detail: { section }});
-              document.body.dispatchEvent(event);    
-            });
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
  * Decorates all blocks in a container element.
  * @param {Element} main The container element
  */
@@ -575,17 +537,9 @@ export async function loadSection(section, index, aboveTheFold = true) {
       }
     }
 
-    if (aboveTheFold) {
-      section.dataset.sectionStatus = 'loaded';
-      const event = new CustomEvent('section-display', { detail: { section }});
-      document.body.dispatchEvent(event);
-
-    } else {
-      section.dataset.sectionStatus = 'loaded-below-the-fold';
-      const event = new CustomEvent('section-display', { detail: { section }});
-      document.body.dispatchEvent(event);
-
-    }
+    section.dataset.sectionStatus = 'loaded';
+    const event = new CustomEvent('section-display', { detail: { section, atf: aboveTheFold }});
+    document.body.dispatchEvent(event);
   }
 }
 
@@ -596,25 +550,6 @@ export async function loadSections(main, aboveTheFoldOnly) {
     if (!aboveTheFold && aboveTheFoldOnly) break;
     // eslint-disable-next-line no-await-in-loop
     await loadSection(sections[i], i, aboveTheFold);
-    if (i === sections.length - 1) {
-      document.fonts.ready.then(() => {
-        sections.forEach((s) => { s.dataset.sectionStatus = 'loaded'; });
-      });
-    }
-  }
-}
-
-/**
- * Loads JS and CSS for all blocks in a container element.
- * @param {Element} main The container element
- */
-export async function loadBlocks(main) {
-  updateSectionsStatus(main);
-  const blocks = [...main.querySelectorAll('div.block')];
-  for (let i = 0; i < blocks.length; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    await loadBlock(blocks[i]);
-    updateSectionsStatus(main);
   }
 }
 
@@ -1125,7 +1060,7 @@ async function loadEager(doc) {
 async function loadLazy(doc) {
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   const main = doc.querySelector('main');
-  loadSections(main);
+  await loadSections(main);
 
   const { hash } = window.location;
   const element = hash ? main.querySelector(hash) : false;
@@ -1152,7 +1087,7 @@ export async function loadFragment(path) {
   if (resp.ok) {
     main.innerHTML = await resp.text();
     await decorateMain(main);
-    await loadBlocks(main);
+    await loadSections(main);
   }
   return main;
 }
