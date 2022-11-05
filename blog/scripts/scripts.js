@@ -546,10 +546,13 @@ export async function loadSection(section, index, aboveTheFold = true) {
 export async function loadSections(main, aboveTheFoldOnly) {
   const sections = [...main.querySelectorAll('.section')];
   for (let i = 0; i < sections.length; i += 1) {
-    const aboveTheFold = main.getBoundingClientRect().bottom < window.innerHeight;
+  // eslint-disable-next-line no-await-in-loop
+    await loadSection(sections[i], i, aboveTheFoldOnly);
+    const before = new Date();
+    const { bottom } = main.getBoundingClientRect();
+    const aboveTheFold = bottom < window.innerHeight;
+    console.log(`section: ${aboveTheFold} ${aboveTheFoldOnly}, ${bottom} / ${window.innerHeight}`, new Date() - before);
     if (!aboveTheFold && aboveTheFoldOnly) break;
-    // eslint-disable-next-line no-await-in-loop
-    await loadSection(sections[i], i, aboveTheFold);
   }
 }
 
@@ -1060,7 +1063,7 @@ async function loadEager(doc) {
 async function loadLazy(doc) {
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   const main = doc.querySelector('main');
-  await loadSections(main);
+  await loadSections(main, false);
 
   const { hash } = window.location;
   const element = hash ? main.querySelector(hash) : false;
