@@ -548,7 +548,11 @@ export async function loadSections(main, aboveTheFoldOnly) {
   for (let i = 0; i < sections.length; i += 1) {
   // eslint-disable-next-line no-await-in-loop
     await loadSection(sections[i], i, aboveTheFoldOnly);
-    if (aboveTheFoldOnly) break;
+    const before = new Date();
+    const { bottom } = main.getBoundingClientRect();
+    const aboveTheFold = bottom < window.innerHeight;
+    console.log(`section: ${aboveTheFold} ${aboveTheFoldOnly}, ${bottom} / ${window.innerHeight}`, new Date() - before);
+    if (!aboveTheFold && aboveTheFoldOnly) break;
   }
 }
 
