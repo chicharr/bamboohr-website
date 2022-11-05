@@ -548,11 +548,7 @@ export async function loadSections(main, aboveTheFoldOnly) {
   for (let i = 0; i < sections.length; i += 1) {
   // eslint-disable-next-line no-await-in-loop
     await loadSection(sections[i], i, aboveTheFoldOnly);
-    const before = new Date();
-    const { bottom } = main.getBoundingClientRect();
-    const aboveTheFold = bottom < window.innerHeight;
-    console.log(`section: ${aboveTheFold} ${aboveTheFoldOnly}, ${bottom} / ${window.innerHeight}`, new Date() - before);
-    if (!aboveTheFold && aboveTheFoldOnly) break;
+    if (aboveTheFoldOnly) break;
   }
 }
 
@@ -1046,6 +1042,14 @@ async function loadEager(doc) {
   if (main) {
     await loadSections(main, true);
 
+    const header = doc.querySelector('header');
+    const queryParams = new Proxy(new URLSearchParams(window.location.search), {
+      get: (searchParams, prop) => searchParams.get(prop),
+    });
+    if (queryParams.header === 'meganav') header.classList.add('header-meganav');
+
+    await loadHeader(header);
+    decorateIcons(main);
   }
 }
 
@@ -1056,15 +1060,6 @@ async function loadLazy(doc) {
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   const main = doc.querySelector('main');
   await loadSections(main, false);
-
-  const header = doc.querySelector('header');
-  const queryParams = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
-  });
-  if (queryParams.header === 'meganav') header.classList.add('header-meganav');
-
-  await loadHeader(header);
-  decorateIcons(main);
 
   const { hash } = window.location;
   const element = hash ? main.querySelector(hash) : false;
