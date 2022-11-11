@@ -461,7 +461,6 @@ export function updateSectionsStatus(main) {
         section.setAttribute('data-section-status', 'loaded');
         const event = new CustomEvent('section-display', { detail: { section }});
         document.body.dispatchEvent(event);
-        console.log('event dispatched')
       }
     }
   }
@@ -966,6 +965,10 @@ async function buildAutoBlocks(main) {
   try {
     let template = toClassName(getMetadata('template'));
     if (window.location.pathname.startsWith('/blog/') && !template) template = 'blog';
+
+    const noTemplateCSS = ['blog'];
+    if (!noTemplateCSS.includes(template)) loadCSS(`/blog/styles/templates/${template}.css`)
+    
     const templates = ['blog', 'integrations-listing'];
     if (templates.includes(template)) {
       const mod = await import(`./${template}.js`);

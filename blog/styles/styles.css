@@ -14,15 +14,6 @@
 @import 'style-vars.css';
 @import 'backgrounds.css';
 @import 'themes/base.css';
-@import 'templates/payroll-roi.css';
-@import 'templates/performance-reviews.css';
-@import 'templates/pricing-quote.css';
-@import 'templates/hr-software.css';
-@import 'templates/hr-unplugged.css';
-@import 'templates/live-demo-webinars.css';
-@import 'templates/bhr-comparison.css';
-@import 'templates/industry.css';
-@import 'templates/ee-solution.css';
 
 html {
   box-sizing: border-box;
@@ -66,7 +57,10 @@ body.appear {
 
 main {
   overflow: hidden;
+  margin: 0;
+  color: var(--color-gray-9);
 }
+
 /* buttons */
 
 a.button:any-link {
@@ -227,11 +221,6 @@ main ol li {
   font-size: 18px;
   line-height: 27px;
   font-weight: var(--body-font-weight);
-}
-
-main {
-  margin: 0;
-  color: var(--color-gray-9);
 }
 
 p,
