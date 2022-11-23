@@ -169,7 +169,7 @@ export function loadCSS(href, callback) {
  function loadTemplateCSS() {
   const template = toClassName(getMetadata('template'));
   if (template) {
-    const templates = ['bhr-comparison', 'bhr-home', 'ee-solution', 'hr-glossary', 'hr-software', 'hr-unplugged',
+    const templates = ['bhr-comparison', 'bhr-home', 'ee-solution', 'hr-glossary', 'hr-software-payroll', 'hr-unplugged',
       'industry', 'live-demo-webinars', 'payroll-roi', 'performance-reviews', 'pricing-quote'];
     if (templates.includes(template)) {
       const cssBase = `${window.hlx.serverPath}${window.hlx.codeBasePath}`;

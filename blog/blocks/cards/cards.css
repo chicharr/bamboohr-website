@@ -32,6 +32,9 @@
 
 /* desktop: normal cols */
 @media (min-width: 1025px) {
+    .cards.style-2-columns.wide-gap {
+        --gap: 10rem;
+    }
     /* no style-1-columns since default */
 
     /* no style-2-columns since inherit from tablet */
@@ -49,6 +52,12 @@
     }
 
     /* follow pattern to add more */
+}
+
+@media (min-width: 1200px) {
+    .cards.style-2-columns.wide-gap {
+        --gap: 13rem;
+    }
 }
 
 /* default styles */
@@ -281,6 +290,11 @@ div.has-text-only h4 {
     box-shadow: var(--theme-shadow2-shade5);
     display: flex;
     overflow: hidden;
+}
+
+.cards.no-box-shadow > .card.has-image img {
+    border-radius: unset;
+    box-shadow: unset;
 }
 
 /* "icon inline" styles */
