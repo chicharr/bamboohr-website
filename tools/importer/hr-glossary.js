@@ -28,13 +28,13 @@ const createCalloutBlock = (main, document) => {
     const sub = callout.querySelector('.HrGlossaryTerm__contentCtaSubheading');
     if (sub) {
       const p = document.createElement('p');
-      p.innerHTML = sub.innerHTML;
+      p.innerHTML = sub.innerHTML.replace(/[\r\n\t]/gm, '');
       container.append(p);
     }
 
     cells.push([container]);
 
-    let cta = callout.querySelector('.HrGlossaryTerm__contentCtaBtn');
+    const cta = callout.querySelector('.HrGlossaryTerm__contentCtaBtn');
     // const href = cta.getAttribute('href');
     // const goodUrl = 'https://www.bamboohr.com' + href;
     // cta.href = goodUrl;
