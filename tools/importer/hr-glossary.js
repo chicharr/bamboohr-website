@@ -47,6 +47,11 @@ const createCalloutBlock = (main, document) => {
   });
 };
 
+const fixGeneralContent = (main) => {
+  const termContent = main.querySelector('.HrGlossaryTerm');
+  termContent.innerHTML = termContent.innerHTML.replaceAll(' href="/', ' href="https://www.bamboohr.com/');
+};
+
 const createReferenceBlock = (main, document) => {
   main.querySelectorAll('.HrGlossaryAlsoLike__container').forEach((container) => {
 
@@ -109,7 +114,6 @@ const createMetadata = (main, document) => {
   }
 
   meta.Template = 'HR Glossary';
-  
   meta.Theme = 'green';
 
   meta.Category = '';
@@ -154,6 +158,7 @@ export default {
     createCalloutBlock(main, document);
     createReferenceBlock(main, document);
     createMetadata(main, document);
+    fixGeneralContent(main);
 
     return main;
   },
