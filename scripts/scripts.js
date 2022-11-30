@@ -1076,6 +1076,13 @@ async function loadMartech() {
  * loads everything needed to get to LCP.
  */
 async function loadEager(doc) {
+  const experiment = getMetadata('experiment');
+  const instantExperiment = getMetadata('instant-experiment');
+  if (instantExperiment || experiment) {
+    const { runExperiment } = await import('./experimentation.js');
+    await runExperiment(experiment, instantExperiment);
+  }
+
   if (!window.hlx.lighthouse) loadMartech();
 
   decorateTemplateAndTheme();
@@ -1110,6 +1117,11 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   addFavIcon('https://www.bamboohr.com/favicon.ico');
+
+  if (window.location.hostname.endsWith('hlx.page') || window.location.hostname === ('localhost')) {
+    // eslint-disable-next-line import/no-cycle
+    import('../../tools/preview/experimentation-preview.js');
+  }
 }
 
 /**
