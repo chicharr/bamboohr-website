@@ -10,14 +10,14 @@
  * governing permissions and limitations under the License.
  */
 
-const SEGMENTATION_CONFIG = {
+const AUDIENCES_CONFIG = {
   audiences: {
     'is-customer': {
       label: 'Is a Customer',
       test: () => {
         // eslint-disable-next-line no-use-before-define
         const features = getBhrFeaturesCookie();
-        return features.is_admin && !features.bhr_user;
+        return features && features.is_admin && !features.bhr_user;
       },
     },
     'not-customer': {
@@ -25,11 +25,33 @@ const SEGMENTATION_CONFIG = {
       test: () => {
         // eslint-disable-next-line no-use-before-define
         const features = getBhrFeaturesCookie();
-        return !(features.is_admin && !features.bhr_user);
+        return !features || !(features.is_admin && !features.bhr_user);
+      },
+    },
+    'mobile': {
+      label: 'Mobile',
+      test: () => {
+        return window.innerWidth < 600;
+      },
+    },
+    'desktop': {
+      label: 'Desktop',
+      test: () => {
+        return window.innerWidth >= 600;
       },
     },
   },
 };
+
+/*
+ * this is an extensible stub to take on audience mappings
+ * @param {string} audience
+ * @return {boolean} is member of this audience
+*/
+export function isValidAudience(audience) {
+ const configuredAudience = AUDIENCES_CONFIG.audiences[audience];
+ return configuredAudience && configuredAudience.test();
+}
 
 /**
  * Gets the value for the specific cookie
@@ -53,7 +75,7 @@ function getBhrFeaturesCookie() {
   try {
   	const decryptedValue = atob(value);
     return JSON.parse(decryptedValue);
-  } catch (err1) {	  
+  } catch (err1) {
 	  try{
 		  return JSON.parse(value);
 	  } catch (err2) {
@@ -634,15 +656,32 @@ export async function loadBlock(block, eager = false) {
   ) {
     block.setAttribute('data-block-status', 'loading');
     const blockName = block.getAttribute('data-block-name');
+    const cssBase = `${window.hlx.serverPath}${window.hlx.codeBasePath}`;
+    let cssPath = `${cssBase}/blocks/${blockName}/${blockName}.css`;
+    let jsPath = `../blocks/${blockName}/${blockName}.js`;
+
+    if (window.hlx.experiment && window.hlx.experiment.run) {
+      const { experiment } = window.hlx;
+      if (experiment.selectedVariant !== 'control') {
+        const { control } = experiment.variants;
+        if (control && control.blocks && control.blocks.includes(blockName)) {
+          const blockIndex = control.blocks.indexOf(blockName);
+          const variant = experiment.variants[experiment.selectedVariant];
+          const blockPath = variant.blocks[blockIndex];
+          cssPath = `${cssBase}/${blockPath}/${blockName}.css`;
+          jsPath = `../${blockPath}/${blockName}.js`;
+        }
+      }
+    }
+
     try {
       const cssLoaded = new Promise((resolve) => {
-        const cssBase = `${window.hlx.serverPath}${window.hlx.codeBasePath}`;
-        loadCSS(`${cssBase}/blocks/${blockName}/${blockName}.css`, resolve);
+        loadCSS(cssPath, resolve);
       });
       const decorationComplete = new Promise((resolve) => {
         (async () => {
           try {
-            const mod = await import(`../blocks/${blockName}/${blockName}.js`);
+            const mod = await import(jsPath);
             if (mod.default) {
               await mod.default(block, blockName, document, eager);
             }
@@ -1046,7 +1085,7 @@ export async function loadHeader(header) {
   await loadBlock(headerBlock);
   // Patch logo URL for is-customer audience
   if (getBhrFeaturesCookie()) {
-    if (SEGMENTATION_CONFIG.audiences['is-customer'].test()) {
+    if (AUDIENCES_CONFIG.audiences['is-customer'].test()) {
       const usp = new URLSearchParams(window.location.search);
       usp.append('segment', 'general');
       document.querySelector('.nav-brand a').href += `?${usp.toString()}`;
@@ -1305,7 +1344,7 @@ async function loadEager(doc) {
     // eslint-disable-next-line import/no-cycle
     const { runSegmentation } = await import('./experimentation.js');
     const resolution = getMetadata('audience-resolution');
-    await runSegmentation(instantSegments, { ...SEGMENTATION_CONFIG, resolution });
+    await runSegmentation(instantSegments, { ...AUDIENCES_CONFIG, resolution });
   }
 
   const experiment = getMetadata('experiment');

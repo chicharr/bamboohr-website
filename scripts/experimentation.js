@@ -3,6 +3,7 @@ import {
   sampleRUM,
   toCamelCase,
   toClassName,
+  isValidAudience,
 } from './scripts.js';
 
 /**
@@ -47,18 +48,28 @@ function parseExperimentConfig(json) {
       const vns = Object.keys(line);
       vns.shift();
       vns.forEach((vn) => {
-        const camelVN = toCamelCase(vn);
-        if (key === 'pages' || key === 'blocks') {
-          variants[camelVN][key] = variants[camelVN][key] || [];
-          if (key === 'pages') variants[camelVN][key].push(new URL(line[vn]).pathname);
-          else variants[camelVN][key].push(line[vn]);
-        } else {
-          variants[camelVN][key] = line[vn];
+        if (line[vn]) {
+          const camelVN = toCamelCase(vn);
+          if (key === 'pages' || key === 'blocks') {
+            variants[camelVN][key] = variants[camelVN][key] || [];
+            if (key === 'pages') {
+              variants[camelVN][key] = line[vn].split(',').map((p) => new URL(p.trim()).pathname);
+            }
+            else variants[camelVN][key].push(line[vn]);
+          } else {
+            variants[camelVN][key] = line[vn];
+          }
         }
       });
     });
     config.variants = variants;
     config.variantNames = variantNames;
+    variantNames.forEach( (vn) => {
+      //fill empty percentage split
+      if(!config.variants[vn].percentageSplit) {
+        config.variants[vn].percentageSplit = '';
+      }
+    });
     return config;
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -132,6 +143,7 @@ function parseExperimentConfig(json) {
     config.id = experimentId;
     config.manifest = path;
     config.basePath = `/experimentation/${experimentId}`;
+    config.label = `Full Experiment: ${experimentId}`;
     return config;
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -141,19 +153,6 @@ function parseExperimentConfig(json) {
 }
 
 /**
- * this is an extensible stub to take on audience mappings
- * @param {string} audience
- * @return {boolean} is member of this audience
- */
-function isValidAudience(audience) {
-  if (audience === 'mobile') {
-    return window.innerWidth < 600;
-  }
-  if (audience === 'desktop') {
-    return window.innerWidth >= 600;
-  }
-  return true;
-}
 
 async function getResolvedSegment(audiences, applicableSegments) {
   const results = await Promise.all(applicableSegments.map((segment) => {
@@ -203,8 +202,8 @@ function getDecisionPolicy(config) {
           id: key,
           allocationPercentage: props.percentageSplit
             ? parseFloat(props.percentageSplit) * 100
-            : 100 - Object.values(config.variants).reduce((result, variant) => {
-              const newResult = result - parseFloat(variant.percentageSplit || 0) * 100;              
+            : Object.values(config.variants).reduce((result, variant) => {
+              const newResult = result - parseFloat(variant.percentageSplit || 0) * 100;
               return newResult;
             }, 100),
         })),
@@ -251,14 +250,14 @@ export async function runExperiment(experiment, instantExperiment) {
   const usp = new URLSearchParams(window.location.search);
   const [forcedExperiment, forcedVariant] = usp.has('experiment') ? usp.get('experiment').split('/') : [];
 
-  const experimentConfig = await getExperimentConfig(experiment, instantExperiment);  
+  const experimentConfig = await getExperimentConfig(experiment, instantExperiment);
   if (!experimentConfig || (toCamelCase(experimentConfig.status) !== 'active' && !forcedExperiment)) {
     return;
   }
 
   experimentConfig.run = forcedExperiment
     || (isValidAudience(toClassName(experimentConfig.audience)) && isSuitablePage());
-    
+
   window.hlx = window.hlx || {};
   window.hlx.experiment = experimentConfig;
   if (!experimentConfig.run) {
@@ -285,7 +284,7 @@ export async function runExperiment(experiment, instantExperiment) {
 
   const currentPath = window.location.pathname;
   const { pages } = experimentConfig.variants[experimentConfig.selectedVariant];
-  if (!pages.length) {
+  if (!pages || !pages.length) {
     return;
   }
 
@@ -298,7 +297,7 @@ export async function runExperiment(experiment, instantExperiment) {
   // Fullpage content experiment
   document.body.classList.add(`experiment-${experimentConfig.id}`);
   document.body.classList.add(`variant-${experimentConfig.selectedVariant}`);
-  await replaceInner(pages[0], document.querySelector('main'));
+  await replaceInner(pages[index], document.querySelector('main'));
 }
 
 export async function runSegmentation(segments, config = {}) {
@@ -325,7 +324,7 @@ export async function runSegmentation(segments, config = {}) {
   if (!resolved.length) {
     return;
   }
-  
+
   sampleRUM('segmentation', { source: segment.id, target: segment.url });
   // eslint-disable-next-line no-console
   console.debug(`running segmentation (${segment.id}) -> ${segment.url}`);

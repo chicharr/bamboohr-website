@@ -81,6 +81,7 @@ async function createExperiment() {
 
   const manifestButton = config.manifest ? `<div class="hlx-button"><a href="${config.manifest}">Manifest</a></div>` : '';
   const div = document.createElement('div');
+  const blocksString = config.variants[config.variantNames[0]].blocks ?  `, Blocks: '${config.variants[config.variantNames[0]].blocks.join(',')}'` : '';
   div.className = 'hlx-experiment hlx-badge';
   div.classList.add(`hlx-badge-status-${toClassName(config.status)}`);
   div.innerHTML = `Experiment: ${config.id} <span class="hlx-open"></span>
@@ -88,7 +89,7 @@ async function createExperiment() {
     <div class="hlx-popup-header">
       <div>
         <h4>${config.label}</h4>
-        <div class="hlx-details">${config.status}${config.audience ? ', ' : ''}${config.audience}${config.variants[config.variantNames[0]].blocks.length ? ', Blocks: ' : ''}${config.variants[config.variantNames[0]].blocks.join(',')}</div>
+        <div class="hlx-details">${config.status}${config.audience ? ', ' : ''}${config.audience}${blocksString}</div>
         <div class="hlx-info">How is it going?</div>
       </div>
       <div>
@@ -224,9 +225,9 @@ async function createSegments() {
   const config = window?.hlx?.segmentation;
   const segments = config?.segments;
   const resolvedSegment = config?.resolvedSegment;
-  
+
   if (!segments || !segments.length || !config) {
-    return null;
+    return '';
   }
   console.debug('preview segments', segments);
 
